@@ -50,7 +50,10 @@ with the given field name.
 
 sub body_param {
   my ($self, $field_name) = @_;
-  sub { return $_[1]->req->body_params->{ $field_name }; }
+  sub {
+    my $field_name = defined $field_name ? $field_name : $_[2]{field_name};
+    return $_[1]->req->body_params->{ $field_name };
+  }
 }
 
 =method query_param
@@ -64,7 +67,10 @@ with the given field name.
 
 sub query_param {
   my ($self, $field_name) = @_;
-  sub { return $_[1]->req->query_params->{ $field_name }; }
+  sub {
+    my $field_name = defined $field_name ? $field_name : $_[2]{field_name};
+    return $_[1]->req->query_params->{ $field_name };
+  }
 }
 
 =method session_entry
