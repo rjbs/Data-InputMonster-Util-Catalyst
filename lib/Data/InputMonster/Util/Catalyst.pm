@@ -36,7 +36,10 @@ the given field name.
 
 sub form_param {
   my ($self, $field_name) = @_;
-  sub { return $_[1]->req->params->{ $field_name }; }
+  sub {
+    my $field_name = defined $field_name ? $field_name : $_[2]{field_name};
+    return $_[1]->req->params->{ $field_name };
+  }
 }
 
 =method body_param
@@ -77,22 +80,21 @@ sub query_param {
 
   my $source = session_entry($locator);
 
-This source will look for an entry in the session for the given locator.  If
-the locator is a string, it is used as a hash key for the session.  If it is a
-code ref, the code is called and passed the session as its first parameter.
+This source will look for an entry in the session for the given locator, using
+the C<dig> utility from L<Data::InputMonster::Util>.
 
 =cut
 
 sub session_entry {
   my ($self, $locator) = @_;
 
-  return sub { $_[1]->session->{$locator} } unless ref $locator;
+  require Data::InputMonster::Util;
+  my $digger = Data::InputMonster::Util->dig($locator);
 
-  require Params::Util;
-  Carp::confess("unhandled argument type for session_entry: $locator")
-    unless Params::Util::_CODELIKE($locator);
-
-  return sub { $locator->( $_[1]->session ) };
+  return sub {
+    my ($monster, $input, $arg) = @_;
+    $monster->$digger($input->session, $arg);
+  };
 }
 
 q{$C IS FOR CATALSYT, THAT'S GOOD ENOUGH FOR ME};
