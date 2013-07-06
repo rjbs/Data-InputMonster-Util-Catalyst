@@ -1,5 +1,10 @@
 Revision history for Data-InputMonster-Util-Catalyst
 
+{{$NEXT}}
+
+0.004     2013-07-05 21:40:00 America/New_York
+          update packaging, bugtracker
+
 0.003     2008-09-19
           improved testedness
 
